@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필</title>
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <script src="/js/jquery-3.7.1.js"></script>
+    <script src="/js/bootstrap.bundle.js"></script>
+    <script src="/js/layout.js"></script>
+
+    <script>
+        $(document).ready(function () {
+             $(".btn-board-delete").on("click", (e) => {
+                var boardId = $(e.target).data("boardId");
+
+                 var url = "/board/myprofile/" + boardId;
+                deleteAjax(url);
+            });
+
+            $("#btn-comment-delete").on("click", (e)=>{
+                var commentId = $(e.target).data("commentId");
+
+                var url = "/comment/myprofile/" + commentId;
+                deleteAjax(url);
+            });
+
+            $("#btn-like-delete").on("click", (e)=>{
+                var likeId = $(e.target).data("likeId");
+
+                var url = "/user/myprofile/boardlike/" + likeId;
+                deleteAjax(url);
+            });
+
+            $("#btn-movie-like-delete").on("click", (e)=>{
+                var movieLikeId = $(e.target).data("movieLikeId");
+
+                var url = "/user/myprofile/movielike/" + movieLikeId;
+                deleteAjax(url);
+            });
+
+
+            function deleteAjax(url){
+                $.ajax({
+                    url:url,
+                    type:'post',
+                    dataType:'json',
+                    success:(data)=>{
+                        location.reload();
+                    }
+                });
+            }
+
+
+
+            const error = $("#error").val();
+
+            if (error == "pwChk") {
+                alert("비밀번호를 확인해 주세요.");
+                history.replaceState({}, null, location.pathname);
+            }
+            else if (error == "notYourProfile") {
+                alert("로그인 정보가 맞지 않습니다.");
+                history.replaceState({}, null, location.pathname);
+            }
+            else if (error == "signOutUser") {
+                alert("탈퇴한 회원입니다.");
+                history.replaceState({}, null, location.pathname);
+            }
+            else if (error == "pwNotMatch") {
+                alert("현재 비밀번호가 일치하지 않습니다.");
+                history.replaceState({}, null, location.pathname);
+            }
+
+            $("#frm").on("submit", function () {
+                const confirmed = confirm("정말로 탈퇴하시겠습니까?\n탈퇴한 아이디/이메일은 재가입할 수 없습니다.");
+
+                if (confirmed) {
+                    $("#method").val("DELETE");
+
+                    const frm = $("#frm")[0];
+                    frm.action = "/signOut";
+                    frm.submit();
+                }
+                else if(!confirmed) {
+                    location.reload();
+                }
+            });
+
+            $("#frm2").on("submit", function () {
+                const confirmed = confirm("프로필 이미지를 삭제하겠습니까?");
+
+                if (confirmed) {
+                    $("#method2").val("POST");
+
+                    const frm2 = $("#frm2")[0];
+                    frm2.action = "/deleteProfileImg";
+                    frm2.submit();
+                }
+                else {
+                    location.reload();
+                }
+            });
+
+            // $("#frm3").on("submit", function () {
+            $("#customFile").on("change", function () {
+                const confirmed = confirm("프로필 이미지를 변경하시겠습니까?");
+
+                if (confirmed) {
+                    $("#method3").val("PUT");
+
+                    const frm3 = $("#frm3")[0];
+                    frm3.action = "/uploadProfileImg";
+                    frm3.submit();
+                }
+            });
+        });
+
+
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+        body {
+            font-family: "Noto Sans KR", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        .profile-header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .profile-picture {
+            border: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border: 5px solid #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: block;
+            margin: 0 auto;
+        }
+        .profile-upload-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn-success-soft {
+            color: #28a745;
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+        .btn-danger-soft {
+            color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+        .list-group-item.active {
+            background-color: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+        .pagination {
+            margin-top: 20px;
+        }
+        .modal-content {
+            border-radius: 10px;
+        }
+        .form-control {
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{/layout/header::header}"></header>
+<!-- Main Content -->
+<main class="container mt-5">
+    <input type="hidden" th:value="${error}" id="error">
+    <input type="hidden" th:value="${session.userId}" id="sessionUserId">
+    <input type="hidden" th:value="${userInfo.id}" id="user-id">
+    <div class="row">
+        <!-- Profile Sidebar -->
+        <div class="col-md-4">
+            <!-- Profile Upload Section -->
+            <div class="profile-upload-section">
+                <h4 class="mb-4"  >프로필 사진</h4>
+                <div class="mb-3 text-center">
+                    <div class="profile-picture" >
+                        <img th:src="${#strings.isEmpty(userInfo
+                        .profileImageName)} ? '/image/DefaultProfileImage.jpg' : @{|/imgs/${userInfo.profileImageName}.jpg|}"
+                             alt="Profile Image" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                </div>
+                <form action="/uploadProfileImg" id="frm3" method="post" class="d-inline justify-content-center" enctype="multipart/form-data">
+                    <input type="hidden" id="method3" name="_method">
+                    <input type="file" id="customFile" name="uploadFile" accept=".jpg" hidden>
+                    <label th:if="${#strings.equals(userInfo.userId, session.userId)}" class="btn btn-success-soft" for="customFile">업로드</label>
+                </form>
+                <form action="/deleteProfileImg" id="frm2" method="post" class="d-inline justify-content-center">
+                    <input type="hidden" id="method2" name="_method">
+                    <button th:if="${#strings.equals(userInfo.userId, session.userId)}" type="submit" class="btn btn-danger-soft" >제거</button>
+                </form>
+            </div>
+            <div class="list-group mt-4" id="list-tab" role="tablist">
+                <p class="text-center text-body">목록</p>
+
+                <a class="list-group-item list-group-item-action active" id="list-posts-list" data-bs-toggle="list" href="#list-posts" aria-controls="posts">내 게시물</a>
+                <a class="list-group-item list-group-item-action" id="list-comments-list" data-bs-toggle="list" href="#list-comments" aria-controls="comments">내 댓글</a>
+                <a class="list-group-item list-group-item-action" id="list-post-like-list" data-bs-toggle="list" href="#list-post-like" aria-controls="likes">좋아요</a>
+                <a class="list-group-item list-group-item-action" id="list-movie-bookmark-list" data-bs-toggle="list" href="#list-movie-bookmark" aria-controls="bookmark">북마크한 영화</a>
+            </div>
+        </div>
+        <!-- Profile Content -->
+        <div class="col-md-8">
+            <div class="tab-content" id="nav-tabContent">
+                <!-- Profile Information Tab -->
+                <div class="tab-pane fade show active" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">
+                    <div class="profile-header">
+                        <h3>프로필 정보</h3>
+                        <form action="#" method="post">
+                            <div class="mb-3">
+                                <h5 class="card-title">
+                                    아이디: <span th:text="${userInfo.userId}"></span>
+                                    <span style="font-size: 15px;" class="text-secondary" th:if="${userInfo.deletedYn} == 'Y'" th:text="${signOutUserMsg}"></span>
+                                </h5>
+                                <p class="card-text">이메일: <span th:text="${userInfo.getEmail()}"></span></p>
+                            </div>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#password-change-modal" th:if="${#strings.equals(userInfo.userId, session.userId)} == true">비밀번호 변경</button>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#account-deletion-modal" th:if="${#strings.equals(userInfo.userId, session.userId)} == true">회원탈퇴</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Posts Table -->
+                <div class="tab-pane fade active show" id="list-posts"  role="tabpanel" aria-labelledby="list-posts-list">
+                    <div class="profile-header">
+                        <h3>내 게시물</h3>
+                        <form th:method="delete" id="frm-post-delete">
+                            <input type="hidden" name="myContent1" th:value="${session.userId}">
+                            <input type="hidden" name="_method" id="post-method">
+                            <div class="table-container mt-4">
+                                <table class="table table-hover table-sm">
+                                    <thead>
+                                    <tr>
+                                        <th>카테고리</th>
+                                        <th>글번호</th>
+                                        <th>글제목</th>
+                                        <th>작성자</th>
+                                        <th>등록일</th>
+                                        <th>조회수</th>
+                                        <th th:if="${#strings.equals(session.userId, userInfo.userId)}">관리</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="post-table-body">
+                                    <!-- Example posts -->
+                                    <tr th:if="${#lists.size(boardList)} > 0" th:each="board : ${boardList}">
+                                        <td th:text="${board.category}">공지사항</td>
+                                        <td th:text="${board.id}">1</td>
+                                        <td><a href="#" th:href="@{|/board/${board.id}|}" th:text="${board.title}">공지사항 제목</a></td>
+                                        <td th:text="${board.user.userId}">유재석</td>
+                                        <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-07-25</td>
+                                        <td th:text="${board.visitCnt}">123</td>
+                                        <td th:if="${#strings.equals(session.userId, userInfo.userId)}">
+                                            <button type="button" class="btn btn-danger btn-sm btn-board-delete" th:attrappend="data-board-id=${board.id}">삭제</button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- Comments Tab -->
+                <div class="tab-pane fade" id="list-comments" role="tabpanel" aria-labelledby="list-comments-list">
+                <div class="profile-header">
+                    <h3>내 댓글</h3>
+                    <form  method="post">
+                    <div class="table-container">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                            <tr>
+                                <th>댓글번호</th>
+                                <th>카테고리</th>
+                                <th>댓글내용</th>
+                                <th>게시물 제목</th>
+                                <th>작성일</th>
+                                <th th:if="${#strings.equals(session.userId, userInfo.userId)}">관리</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${#lists.size(commentList)} > 0" th:each="comment : ${commentList}">
+                                <td th:text="${comment.id}">1</td>
+                                <td th:text="${comment.board.category}">공지사항</td>
+                                <td th:text="${comment.contents}">첫 번째 댓글 내용</td>
+                                <td><a href="#" th:href="@{|/board/${comment.board.id}|}" th:text="${comment.board.title}">게시물 제목</a></td>
+                                <td th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd')}">2024-07-25</td>
+                                <td th:if="${#strings.equals(session.userId, userInfo.userId)}">
+                                    <button type="button" class="btn btn-danger" id="btn-comment-delete" th:attrappend="data-comment-id=${comment.id}">삭제</button>
+                                </td>
+                            </tr>
+                            <!-- Add more rows as needed -->
+                            </tbody>
+                        </table>
+
+                    </div>
+                    </form>
+                </div>
+                </div>
+                <!--
+                ------------------------------
+                좋아요 게시물
+                ------------------------------
+                -->
+                <div class="tab-pane fade" id="list-post-like" role="tabpanel" aria-labelledby="list-post-like-list">
+                        <div class="profile-header">
+                            <h3>좋아요</h3>
+                            <form action="/user/myProfile/" method="post">
+                                <input type="hidden" name="myContent3" th:value="${session.userId}">
+                                <div class="table-container">
+                                    <table class="table table-hover table-sm">
+                                        <thead>
+                                        <tr>
+                                            <th>카테고리</th>
+                                            <th>글번호</th>
+                                            <th>글제목</th>
+                                            <th>작성자</th>
+                                            <th>등록일</th>
+                                            <th>조회수</th>
+                                            <th th:if="${#strings.equals(session.userId, userInfo.userId)}">관리</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <!-- Example posts -->
+                                        <tr th:if="${#lists.size(likeList)} > 0" th:each="likeBoard : ${likeList}">
+                                            <td th:text="${likeBoard.board.category}">공지사항</td>
+                                            <td th:text="${likeBoard.id}">1</td>
+                                            <td><a href="#" th:href="@{|/board/${likeBoard.id}|}" th:text="${likeBoard.board.title}">공지사항 제목</a></td>
+                                            <td th:text="${likeBoard.user.userId}">유재석</td>
+                                            <td th:text="${#temporals.format(likeBoard.board.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-07-25</td>
+                                            <td th:text="${likeBoard.board.visitCnt}">123</td>
+                                            <td th:if="${#strings.equals(session.userId, userInfo.userId)}">
+                                                <button type="button" id="btn-like-delete" class="btn btn-danger btn-like-delete" th:attrappend="data-like-id=${likeBoard.id}">삭제</button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                <!--
+               ------------------------------
+               영화 북마크
+               ------------------------------
+               -->
+                <div class="tab-pane fade" id="list-movie-bookmark" role="tabpanel" aria-labelledby="list-movie-bookmark-list">
+                    <div class="profile-header">
+                        <h3>좋아요</h3>
+                        <form action="/user/myProfile/" method="post">
+                            <input type="hidden" name="myContent3" th:value="${session.userId}">
+                            <div class="table-container">
+                                <table class="table table-hover table-sm">
+                                    <thead>
+                                    <tr>
+                                        <th>카테고리</th>
+                                        <th>영화제목</th>
+                                        <th>감독</th>
+                                        <th>제작사</th>
+                                        <th th:if="${#strings.equals(session.userId, userInfo.userId)}">관리</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!-- Example posts -->
+                                    <tr th:if="${#lists.size(movieList)} > 0" th:each="movieBoard : ${movieList}">
+                                        <td th:text="${movieBoard.movie.movieCate}">공지사항</td>
+                                        <td><a href="#" th:href="@{|/movie/movieinfo/${movieBoard.movie.id}|}" th:text="${movieBoard.movie.movieName}">공지사항 제목</a></td>
+                                        <td th:text="${movieBoard.movie.director.name}">유재석</td>
+                                        <td th:text="${movieBoard.movie.company}">123</td>
+                                        <td th:if="${#strings.equals(session.userId, userInfo.userId)}">
+                                            <button type="button" id="btn-movie-like-delete" class="btn btn-danger btn-sm" th:attrappend="data-movie-like-id=${movieBoard.id}">삭제</button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Password Change Modal -->
+<div class="modal fade" id="password-change-modal" tabindex="-1" aria-labelledby="passwordChangeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="passwordChangeModalLabel">비밀번호 변경</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{|/changePasswordProfile/${userId}|}" method="post">
+                    <div class="mb-3">
+                        <label for="current-password" class="form-label">현재 비밀번호</label>
+                        <input type="password" class="form-control" id="current-password" name="userPw" placeholder="현재 비밀번호" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="new-password" class="form-label">새 비밀번호</label>
+                        <input type="password" class="form-control" id="new-password" name="changePw" placeholder="새 비밀번호" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm-password" class="form-label">비밀번호 확인</label>
+                        <input type="password" class="form-control" id="confirm-password" name="changePwChk" placeholder="비밀번호 확인" required>
+                        <div class="invalid-feedback">비밀번호가 일치하지 않습니다.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">저장</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Account Deletion Modal -->
+<div class="modal fade" id="account-deletion-modal" tabindex="-1" aria-labelledby="accountDeletionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accountDeletionModalLabel">회원탈퇴</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="signOut" method="post" id="frm">
+                    <input type="hidden" id="method" name="_method">
+                    <div class="mb-3">
+                        <label for="delete-password" class="form-label">비밀번호 확인</label>
+                        <input type="password" class="form-control" id="delete-password" name="userPw" placeholder="비밀번호를 입력하세요" required>
+                        <div class="invalid-feedback">비밀번호가 일치하지 않습니다.</div>
+                    </div>
+                    <button type="submit" class="btn btn-danger">탈퇴</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+
+<script>
+    $(document).ready(function() {
+        $('.category-buttons button').click(function() {
+            var filter = $(this).data('filter');
+            if (filter === 'all') {
+                $('#post-table-body tr').show();
+            } else {
+                $('#post-table-body tr').each(function() {
+                    var category = $(this).data('category');
+                    $(this).toggle(category === filter);
+                });
+            }
+        });
+    });
+</script>
+<footer th:replace="~{/layout/footer::footer}"></footer>
+</body>
+</html>

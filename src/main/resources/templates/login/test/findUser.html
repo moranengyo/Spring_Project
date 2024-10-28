@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아이디 찾기</title>
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <script src="/js/jquery-3.7.1.js"></script>
+    <script src="/js/bootstrap.bundle.js"></script>
+    <style>
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        .form-control {
+            margin-bottom: 15px;
+        }
+        .btn-primary {
+            margin-top: 10px;
+        }
+        #result {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<header class="p-3 bg-dark text-white text-center">
+    <h1>아이디 찾기</h1>
+</header>
+
+<main class="container">
+    <section>
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">아이디 찾기</h4>
+            </div>
+            <div class="card-body">
+                <form id="find-id-form" method="post">
+                    <!-- Name Input -->
+                    <div class="mb-3">
+                        <label for="user_name" class="form-label">이름 <strong>필수</strong></label>
+                        <input type="text" name="user_name" id="user_name" required class="form-control" placeholder="이름">
+                    </div>
+
+                    <!-- Email Input -->
+                    <div class="mb-3">
+                        <label for="user_email" class="form-label">이메일 <strong>필수</strong></label>
+                        <input type="email" name="user_email" id="user_email" required class="form-control" placeholder="이메일">
+                    </div>
+
+                    <!-- Hint Input -->
+                    <div class="mb-3">
+                        <label for="hint" class="form-label">힌트 <strong>필수</strong></label>
+                        <input type="text" name="hint" id="hint" required class="form-control" placeholder="힌트">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">아이디 찾기</button>
+                    </div>
+                </form>
+
+                <!-- Result Section -->
+                <div id="result" class="mt-4">
+                    <h5>찾은 아이디:</h5>
+                    <p id="found-id"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    $(document).ready(function() {
+        $('#find-id-form').on('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Collect form data
+            const formData = $(this).serialize();
+
+            // AJAX request
+            $.ajax({
+                url: '/find-id',
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    $('#found-id').text(response.id);
+                    $('#result').show();
+                },
+                error: function(xhr) {
+                    alert(xhr.responseJSON.message || '아이디를 찾을 수 없습니다. 입력한 정보를 확인해 주세요.');
+                    $('#result').hide();
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

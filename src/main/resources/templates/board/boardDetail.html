@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <!-- 메타 데이터 및 스타일 시트 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판 상세보기</title>
+    <link href="/css/bootstrap.css" rel="stylesheet"> <!-- 부트스트랩 CSS 링크 -->
+    <script src="/js/jquery-3.7.1.js"></script> <!-- jQuery 스크립트 링크 -->
+    <script src="/js/bootstrap.bundle.js"></script> <!-- 부트스트랩 JavaScript 링크 -->
+
+    <script src="/js/layout.js"></script>
+    <script src="/js/board-like-btn.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#btn-detail").on("click", function () {
+                history.back();
+            });
+
+            $("#btn-board-delete").on("click", function () {
+                $("#method").val("DELETE");
+
+                const frm = $("#frm")[0];
+                frm.action = "/board/" + $("#board-id").val();
+                frm.submit();
+            });
+            $("#btn-delete2").on("click", function () {
+                $("#method").val("DELETE");
+
+                const frm = $("#frm")[0];
+                frm.action = "/board/" + $("#board-id").val();
+                frm.submit();
+            });
+
+            $("#btn-update").on("click", function () {
+                $("#method").val("PUT");
+
+                const frm = $("#frm")[0];
+                frm.action = "/board/" + $("#board-id").val();
+                frm.submit();
+            });
+
+        });
+    </script>
+</head>
+<body>
+<!-- 헤더 영역 -->
+<header th:replace="~{/layout/header::header}">
+
+</header>
+
+<!-- 메인 콘텐츠 영역 -->
+<main class="container mt-5">
+    <section>
+        <form id="frm" action="#" method="POST">
+            <input type="hidden" id="method" name="_method">
+            <input type="hidden" id="board-id" name="boardId" th:value="${board.id}">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <!-- 게시물 정보 테이블 -->
+                <table class="table mb-4">
+                    <thead>
+                    <tr>
+                        <th colspan="2" class="bg-dark text-white text-center">게시물 제목</th>
+                    </tr>
+                    <tr>
+                        <th class="bg-light"><a href="/user/myProfile/" class="text-decoration-none text-secondary" th:text="${board.user?.userId}" th:href="|@{/profile/}${board.user?.userId}|">작성자: 유재석</a></th>
+                        <th class="bg-light" th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성일: 2024-07-26</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td colspan="2" class="text-muted" th:text="${board.title}">게시물 제목: 충격! 유재석 거지 되다</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- 게시물 내용 -->
+                <div class="mb-4" style="min-height: 250px;">
+                    <p th:text="${board.content}">게시물 내용이 여기에 들어갑니다. 게시물 내용이 여기에 들어갑니다. 게시물 내용이 여기에 들어갑니다. 게시물 내용이 여기에 들어갑니다.</p>
+                </div>
+
+                <!--------좋아요 하트 토글 버튼----->
+                <div class="text-center">
+                    <form th:action="@{|/user/${board.id}|}" th:method="post">
+                        <input type="hidden" name="boardLike" th:value="${board.id}">
+                        <button class="btn btn-outline-danger px-4 py-2 rounded-full flex items-center justify-center"
+                                th:classappend="${!#strings.isEmpty(session.userId)  ?
+                                                'btn-like' + ((userLike != null) and userLike == 'Y' ? ' btn-danger text-white' : '' )
+                                                :'text-danger'}"
+                                type="button" data-like="Y" th:attr="data-num=${likeCnt}"
+                                th:attrappend="data-onoff=${(userLike != null) and userLike == 'Y'} ? 1 : 0"
+                                th:text="'Y ' + ${likeCnt}">
+                            좋아요
+                        </button>
+                        <button class="btn btn-outline-primary  px-4 py-2 rounded-full flex items-center justify-center"
+                                th:classappend="${!#strings.isEmpty(session.userId) ?
+                                                'btn-like' + ((userLike != null) and userLike == 'N' ? ' btn-primary text-white' : '' )
+                                                : 'text-primary'}"
+                                type="button" data-like="N"    th:attr="data-num=${disLikeCnt}"
+                                th:attrappend="data-onoff=${(userLike != null) and userLike == 'N'} ? 1 : 0"
+                                th:text="'N ' + ${disLikeCnt}">
+                            싫어요
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 수정 및 삭제 버튼들 -->
+                <div th:if="${#strings.equals(session.userId, board.user.userId)}" class="d-flex gap-2 mb-4">
+
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit-post-modal">수정</button>
+                    <!--                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-post-modal">삭제</button>-->
+                    <button type="button" class="btn btn-danger" id="btn-board-delete">삭제</button>
+                </div>
+                <!-- 댓글 작성 폼 -->
+                <div th:if="!${#strings.isEmpty(session.userId)}" class="mb-4">
+                    <h3>댓글 작성</h3>
+                    <form action="/comment/write" method="post">
+                        <input type="hidden" name="userId" th:value="${session.userId}">
+                        <input type="hidden" name="boardId" th:value="${board.id}">
+                        <div class="mb-3">
+                            <textarea id="comment-text" class="form-control" name="contents" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" id="btn-reply" class="btn btn-primary">댓글 작성</button>
+                    </form>
+                </div>
+
+                <!-- 댓글 목록 테이블 -->
+                <div>
+                    <h3>댓글 목록</h3>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">작성자</th>
+                            <th scope="col">작성일</th>
+                            <th scope="col">댓글 내용</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.size(board.commentList)} > 0" th:each="comment : ${board.commentList}">
+                            <td><a href="#" class="text-decoration-none text-secondary" th:text="${comment.user?.userId}" th:href="@{|/profile/${comment.user?.userId}|}">홍길동</a></td>
+                            <td th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td th:text="${comment.contents}">댓글 내용이 여기에 들어갑니다.</td>
+                        </tr>
+
+                        <tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </form>
+    </section>
+</main>
+
+<!-- 게시물 수정 모달 -->
+<div class="modal fade" id="edit-post-modal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPostModalLabel">게시물 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{|/board/${board.id}|}" th:method="put">
+                    <input type="hidden" name="boardId" th:value="${board.id}">
+                    <div class="mb-3">
+                        <label for="edit-title" class="form-label">제목</label>
+                        <input type="text" class="form-control" name="title" id="edit-title" value="게시물 제목" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-content" class="form-label">내용</label>
+                        <textarea class="form-control" name="content" id="edit-content" rows="10" required>게시물 내용이 여기에 들어갑니다.</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">저장</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 게시물 삭제 모달 -->
+<div class="modal fade" id="delete-post-modal" tabindex="-1" aria-labelledby="deletePostModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{|/board/${board.id}|}" th:method="delete">
+                <input type="hidden" name="boardId" th:value="${board.id}">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePostModalLabel">게시물 삭제</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>0
+            <div class="modal-body">
+                <p>이 게시물을 삭제하시겠습니까?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" id="btn-delete2" class="btn btn-danger">삭제</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 푸터 영역 (Thymeleaf 사용 시 외부 파일로 대체 가능) -->
+<footer th:replace="~{/layout/footer::footer}"></footer>
+
+</body>
+</html>

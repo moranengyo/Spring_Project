@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  <script src="/js/jquery-3.7.1.js"></script>
+  <script src="/js/bootstrap.bundle.js"></script>
+
+</head>
+<body>
+<div>
+  <form action="/findId" method="post">
+    <div class="form-floating">
+      <input type="text" class="form-control" id="email" name="email" placeholder="가입시 사용한 email">
+      <label for="email">가입시 사용한 email</label>
+    </div>
+
+    <div class="form-floating">
+      <input type="password" class="form-control" id="user-pw" name="userPw" placeholder="가입시 pw">
+      <label for="user-pw">가입시 pw</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">ID 찾기</button>
+
+  </form>
+</div>
+</body>
+</html>

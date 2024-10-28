@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사용하기</title>
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <script src="/js/jquery-3.7.1.js"></script>
+    <script src="/js/bootstrap.bundle.js"></script>
+    <script src="/js/multicarousel/multicarousel.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+        body {
+            font-family: "Noto Sans KR", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        .carousel-item img {
+            height: 400px;
+            object-fit: cover;
+        }
+
+
+
+        .articles .item img {
+            max-width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            border: 1px solid #28a745;
+            padding: 3px;
+        }
+
+        .articles .item h3 {
+            color: #555;
+            font-weight: 400;
+            margin-bottom: 0;
+        }
+
+        .articles .item small {
+            color: #aaa;
+            font-size: 0.75em;
+        }
+
+        .multi-carousel{
+            float:left;
+            width:100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .multi-carousel-inner{
+            float:left;
+            transition: 1s ease all;
+        }
+
+        .multi-carousel-inner .item {
+            float :left
+        }
+
+        .multi-carousel .leftLst,
+        .multi-carousel .rightLst{
+            position:absolute;
+            height:450%;
+            opacity: 80%;
+            background-color: #555;
+        }
+
+        .multi-carousel .leftLst { left:0; }
+        .multi-carousel .rightLst { right:0; }
+
+        .multi-carousel .leftLst.over,
+        .multi-carousel .rightLst.over {
+            pointer-events: none;
+
+            opacity: 0%; }
+    </style>
+</head>
+
+<body>
+<header th:replace="~{/layout/header::header}"></header>
+
+<div class="row">
+    <div class="col-md-12 bg-primary-subtle" >
+        <div class="multi-carousel" data-items="2, 3, 4, 5" data-slide="1" style="height: 450px;">
+            <div class="multi-carousel-inner">
+                <div th:each="showing : ${showingMovieList}" class="item" style="height: 450px;">
+                    <div style="height: 550px;">
+                        <a th:href="@{|/movie/movieinfo/${showing.id}|}">
+                            <img th:src="${!#strings.isEmpty(showing.posterImageName)}
+                            ? @{|/image/${showing.posterImageName}.jpg|}
+                            : 'https://dummyimage.com/300X450/ced4da/6c757d'"
+                                 style="height:100%; width:95%;"
+                            >
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <button class="border-0 rounded-0 btn btn-primary leftLst"><</button>
+            <button class="border-0 rounded-0 btn btn-primary rightLst">></button>
+        </div>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container px-5 my-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-8 col-xl-6">
+                <div class="text-center">
+                    <h2 class="fw-bolder">추천 영화</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row gx-5" th:if="${#lists.size(recommendedMovieList) > 0}" th:remove="all-but-first">
+            <div th:each="recommended : ${recommendedMovieList}" class="col-md mb-5">
+                <div class="card h-100 shadow border-0">
+                    <img
+                            class="card-img-top"
+                            th:src="${!#strings.isEmpty(recommended.posterImageName)} ? @{|/image/${recommended.posterImageName}.jpg|} : 'https://dummyimage.com/600x350/ced4da/6c757d'"
+                            th:alt="${recommended.movieName}"
+                    >
+                    <div class="card-body p-4">
+                        <a class="text-decoration-none link-dark stretched-link" th:href="@{|/movie/movieinfo/${recommended.id}|}"><h5 class="card-title mb-3" th:text="${recommended.movieName}">영화 title</h5></a>
+                        <p class="card-text mb-0" th:text="${recommended.movieCate}">영화 장르 ,줄거리</p>
+                    </div>
+                    <div class="card-footer p-4 pt-0 bg-transparent border-top-0">
+                        <div class="d-flex align-items-end justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <img class="rounded-circle me-3" src="https://dummyimage.com/40x40/ced4da/6c757d" alt="...">
+                                <div class="small">
+                                    <div class="fw-bold" th:text="${recommended.director.name}">감독 이름</div>
+                                    <div class="text-muted" th:text="${recommended.openDt}">개봉일 ,러닝 타임</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-5">
+                <div class="card h-100 shadow border-0">
+                    <img class="card-img-top" src="https://dummyimage.com/600x350/ced4da/6c757d" alt="...">
+                    <div class="card-body p-4">
+                        <div class="badge bg-primary bg-gradient rounded-pill mb-2">News</div>
+                        <a class="text-decoration-none link-dark stretched-link" href="#!"><h5 class="card-title mb-3">영화 title</h5></a>
+                        <p class="card-text mb-0">영화 장르 ,줄거리</p>
+                    </div>
+                    <div class="card-footer p-4 pt-0 bg-transparent border-top-0">
+                        <div class="d-flex align-items-end justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <img class="rounded-circle me-3" src="https://dummyimage.com/40x40/ced4da/6c757d" alt="...">
+                                <div class="small">
+                                    <div class="fw-bold">감독 이름</div>
+                                    <div class="text-muted">개봉일 ,러닝 타임</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-5">
+                <div class="card h-100 shadow border-0">
+                    <img class="card-img-top" src="https://dummyimage.com/600x350/ced4da/6c757d" alt="...">
+                    <div class="card-body p-4">
+                        <div class="badge bg-primary bg-gradient rounded-pill mb-2">News</div>
+                        <a class="text-decoration-none link-dark stretched-link" href="#!"><h5 class="card-title mb-3">영화 title</h5></a>
+                        <p class="card-text mb-0">영화 장르 ,줄거리</p>
+                    </div>
+                    <div class="card-footer p-4 pt-0 bg-transparent border-top-0">
+                        <div class="d-flex align-items-end justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <img class="rounded-circle me-3" src="https://dummyimage.com/40x40/ced4da/6c757d" alt="...">
+                                <div class="small">
+                                    <div class="fw-bold">감독 이름</div>
+                                    <div class="text-muted">개봉일 ,러닝 타임</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!---->
+<div class="container mt-5">
+    <!-- Cards -->
+
+    <div class="row">
+        <!-- Movie Review Card -->
+        <div class="col-sm mb-4">
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h2 class="h3 mb-0">공지사항 게시판</h2>
+                    <a href="/board?searchCate=공지&searchValue=" class="btn btn-secondary">게시판 이동</a>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group mt-3" th:if="${#lists.size(noticeBoardLatestList) > 0}" th:remove="all-but-first">
+                        <li th:each="noticeBoard : ${noticeBoardLatestList}" class="list-group-item d-flex align-items-center">
+                            <div class="text">
+                                <a href="#" th:href="@{|/board/${noticeBoard.id}|}">
+                                    <h3 class="h5" th:text="${noticeBoard.title}">Lorem Ipsum Dolor</h3>
+                                </a>
+                                <small th:text="'작성자 : ' + ${noticeBoard.user.userId} + ' / ' ">ddd</small>
+                                <small th:text="${#temporals.format(noticeBoard.createdAt, 'yyyy-MM-dd')}">ddd</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="text">
+                                <a href="#">
+                                    <h3 class="h5">Lorem Ipsum Dolor</h3>
+                                </a>
+                                <small>Posted on 5th June 2017 by Aria Smith.</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="text">
+                                <a href="#">
+                                    <h3 class="h5">Lorem Ipsum Dolor</h3>
+                                </a>
+                                <small>Posted on 5th June 2017 by Aria Smith.</small>
+                            </div>
+                        </li>
+                        <!-- Repeat list items as needed -->
+                    </ul>
+                </div>
+                <div class="card-footer d-flex justify-content-end" style="height: 50px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Notice Board Card -->
+        <div class="col-sm mb-4">
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h2 class="h3 mb-0">영화 OO 게시판</h2>
+                    <a href="/movie" class="btn btn-secondary">게시판 이동</a>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group mt-3" th:remove="all-but-first">
+                        <li th:if="${#lists.size(movieBoardLatestList) > 0}"
+                            th:each="movieBoard : ${movieBoardLatestList}"
+                            class="list-group-item d-flex align-items-center">
+                            <div class="text">
+                                <a th:href="@{|/movie/movieinfo/${movieBoard.id}|}">
+                                    <h3 class="h5" th:text="${movieBoard.movie.movieName}">Lorem Ipsum Dolor</h3>
+                                </a>
+                                <small th:text="'감독 : ' + ${movieBoard.movie.director.name} + ' / ' ">ddd</small>
+                                <small th:text="${#temporals.format(movieBoard.createdAt, 'yyyy-MM-dd')}">ddd</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="text">
+                                <a href="#">
+                                    <h3 class="h5">Lorem Ipsum Dolor</h3>
+                                </a>
+                                <small>Posted on 5th June 2017 by Aria Smith.</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="text">
+                                <a href="#">
+                                    <h3 class="h5">Lorem Ipsum Dolor</h3>
+                                </a>
+                                <small>Posted on 5th June 2017 by Aria Smith.</small>
+                            </div>
+                        </li>
+                        <!-- Repeat list items as needed -->
+                    </ul>
+                </div>
+                <div class="card-footer d-flex justify-content-end" style="height: 50px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Movie Review Card -->
+        <div class="col-sm mb-4">
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h2 class="h3 mb-0">영화 리뷰 게시판</h2>
+                    <a href="/board?searchCate=리뷰&searchValue=" class="btn btn-secondary">게시판 이동</a>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group mt-3" th:if="${#lists.size(reviewBoardLatestList)} > 0" th:remove="all-but-first">
+                        <li class="list-group-item d-flex align-items-center" th:each="reviewBoard: ${reviewBoardLatestList}">
+                            <div class="text">
+                                <a href="#" th:href="@{|/board/${reviewBoard.id}|}">
+                                    <h3 class="h5" th:text="${reviewBoard.title}">Lorem Ipsum Dolor</h3>
+                                </a>
+                                <small th:text="'작성자 : ' + ${reviewBoard.user.userId} + ' / ' ">ddd</small>
+                                <small th:text="${#temporals.format(reviewBoard.createdAt, 'yyyy-MM-dd')}">ddd</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="text">
+                                <a href="#">
+                                    <h3 class="h5">Lorem Ipsum Dolor</h3>
+                                </a>
+                                <small>Posted on 5th June 2017 by Aria Smith.</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="text">
+                                <a href="#">
+                                    <h3 class="h5">Lorem Ipsum Dolor</h3>
+                                </a>
+                                <small>Posted on 5th June 2017 by Aria Smith.</small>
+                            </div>
+                        </li>
+                        <!-- Repeat list items as needed -->
+                    </ul>
+                </div>
+                <div class="card-footer d-flex justify-content-end" style="height: 50px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Notice Board Card -->
+        <div class="col-sm mb-4">
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h2 class="h3 mb-0">자유 게시판</h2>
+                    <a href="/board?searchCate=자유&searchValue=" class="btn btn-secondary">게시판 이동</a>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group mt-3" th:if="${#lists.size(publicBoardLatestList)} > 0" th:remove="all-but-first">
+                        <li class="list-group-item d-flex align-items-center" th:each="publicBoard : ${publicBoardLatestList}">
+                            <div class="text">
+                                <a href="#" th:href="@{|board/${publicBoard.id}|}">
+                                    <h3 class="h5" th:text="${publicBoard.title}">Lorem Ipsum Dolor</h3>
+                                </a>
+                                <small th:text="'작성자 : ' + ${publicBoard.user.userId} + ' / ' ">ddd</small>
+                                <small th:text="${#temporals.format(publicBoard.createdAt, 'yyyy-MM-dd')}">ddd</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="text">
+                                <a href="#">
+                                    <h3 class="h5">Lorem Ipsum Dolor</h3>
+                                </a>
+                                <small>Posted on 5th June 2017 by Aria Smith.</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="text">
+                                <a href="#">
+                                    <h3 class="h5">Lorem Ipsum Dolor</h3>
+                                </a>
+                                <small>Posted on 5th June 2017 by Aria Smith.</small>
+                            </div>
+                        </li>
+                        <!-- Repeat list items as needed -->
+                    </ul>
+                </div>
+                <div class="card-footer d-flex justify-content-end" style="height: 50px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<footer th:replace="~{/layout/footer::footer}"></footer>
+
+</body>
+</html>

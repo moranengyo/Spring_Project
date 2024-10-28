@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판</title>
+    <script src="/js/jquery-3.7.1.js"></script>
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <script src="/js/bootstrap.bundle.js"></script>
+    <script src="/js/layout.js"></script>
+    <style>
+        .search-form {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+        }
+
+        .search-form .form-label {
+            font-weight: bold;
+        }
+
+        .search-form td {
+            padding: 0.5rem;
+        }
+
+        .table thead {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .actions-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .actions-container .pagination {
+            margin-bottom: 0;
+        }
+
+        .actions-container .btn-primary {
+            margin-left: 1rem;
+        }
+
+        .sorting-icons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sorting-icons i {
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+
+<body>
+<header th:replace="~{/layout/header::header}"></header>
+<main class="container mt-5">
+    <!-- 검색 폼 -->
+    <div>
+        <form action="/board" method="get">
+            <table class="table table-borderless mb-0">
+                <tbody>
+                <tr>
+                    <!-- 카테고리 선택 -->
+                    <td>
+                        <label for="categorySelect" class="form-label">카테고리</label>
+                        <select class="form-select" id="categorySelect" name="searchCate">
+                            <option th:value="'None'">선택</option>
+                            <option th:each="type : ${boardType}"
+                                    th:text="${type.description}">
+                                모든 카테고리
+                            </option>
+                        </select>
+                    </td>
+
+                    <td>
+                        <label for="titleSearch" class="form-label">제목</label>
+                        <input type="text" class="form-control" id="titleSearch" name="searchValue" placeholder="제목 검색">
+                    </td>
+                </tr>
+                <tr>
+                    <!-- 검색 버튼 -->
+                    <td colspan="4" class="text-center">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+    <!-- 게시물 목록 -->
+    <table class="table table-hover table-striped mt-4">
+        <thead>
+        <tr>
+            <th>글번호</th>
+            <th></th>
+            <th>카테고리</th> <!-- 새로 추가된 카테고리 열 -->
+            <th>글제목</th>
+            <th>작성자</th>
+            <th>등록일</th>
+            <th>조회수</th>
+        </tr>
+        <tbody id="postsTableBody">
+        <!-- Example row - replace with dynamic content -->
+        <tr th:if="${#lists.size(boardList)} > 0" th:each="board : ${boardList}">
+            <td th:text="${board.id}">1</td>
+            <td th:text="${board.warning}">주의</td>
+            <td th:text="${board.category}">공지</td> <!-- 카테고리 데이터 -->
+            <td><a href="#" th:href="@{|/board/${board.id}|}" th:text="${board.title}">게시물 제목</a></td>
+            <td><a href="#" class="text-secondary text-decoration-none" th:href="@{|/profile/${board.user?.userId}|}" th:text="${board.user?.userId}">유재석</a></td>
+            <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm:ss')}" >2024-07-26</td>
+            <td th:text="${board.visitCnt}">12</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 액션 컨테이너 -->
+    <div class="d-flex justify-content-center actions-container">
+
+        <!-- 페이지 네비게이션 -->
+        <nav  aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" th:href="${boardList.first} ? '#' : @{/board/(page=${boardList.number - 1})} " aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li th:each="barNum : ${barList}" class="page-item" th:class="${boardList.number == barNum} ? 'active'">
+                    <a class="page-link" th:href="@{/board/(page=${barNum})}" th:text="${barNum} + 1">1</a>
+                </li>
+
+                <li class="page-item">
+                    <a class="page-link" th:href="${boardList.last} ? '#' : @{/board/(page=${boardList.number + 1})} "  aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- 글쓰기 버튼 -->
+    <div class="d-flex justify-content-end">
+        <a href="/board/write" class="btn btn-primary" th:href="${#strings.isEmpty(session.userId)} ? @{/login} : @{/board/write}">글쓰기</a>
+    </div>
+
+</main>
+<footer th:replace="~{layout/footer::footer}"></footer>
+
+</body>
+
+</html>

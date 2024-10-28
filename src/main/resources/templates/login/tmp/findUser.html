@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사용하기</title>
+    <script src="/js/jquery-3.7.1.js"></script>
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <script src="/js/bootstrap.bundle.js"></script>
+</head>
+
+<script>
+    $(document).ready(function () {
+        const error = $("#error").val();
+        if (error == "signOutUser") {
+            alert("이미 탈퇴한 회원입니다.");
+            history.replaceState({}, null, location.pathname);
+        }
+        if (error == "notFoundUser") {
+            alert("회원 정보를 찾을 수 없습니다.");
+            history.replaceState({}, null, location.pathname);
+        }
+    });
+</script>
+
+<body class="d-flex flex-column min-vh-100">
+<!---->
+<header th:replace="~{/layout/header::header}"></header>
+<!---->
+<main class="flex-grow-1 d-flex align-items-center justify-content-center">
+    <input type="hidden" th:value="${error}" id="error">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3 text-center">아이디 찾기</h4>
+                        <form action="/findId" id="find-userid-form" method="post">
+                            <div class="mb-3">
+                                <label for="Email" class="form-label">이메일 주소</label>
+                                <input type="email" class="form-control" id="Email" name="email" placeholder="이메일을 입력하세요" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="userPw" class="form-label">비밀번호</label>
+                                <input type="password" class="form-control" id="userPw" name="userPw" placeholder="비밀번호를 입력하세요" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">아이디 찾기</button>
+                        </form>
+                        <button type="button" class="btn btn-secondary w-100 mt-3" onclick="window.location.href='/login'">로그인으로 돌아가기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Footer -->
+<footer th:replace="~{/layout/footer::footer}"></footer>
+
+
+</body>
+</html>

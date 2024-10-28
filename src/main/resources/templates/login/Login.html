@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사용하기</title>
+    <script src="/js/jquery-3.7.1.js"></script>
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <script src="/js/bootstrap.bundle.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+        body {
+            font-family: "Noto Sans KR", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 500;
+            font-style: normal;
+        }
+        .login-page {
+            max-width: 400px;
+            margin: auto;
+            padding: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+        }
+        .login-page .form-control {
+            margin-bottom: 1rem;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            const error = $("#error").val();
+            if (error == "loginFailed") {
+                alert("로그인에 실패하였습니다.");
+                window.location.replace("login");
+            }
+            else if(error == "alrdyOutUser") {
+                alert("회원탈퇴한 유저입니다.");
+                window.location.replace("login");
+            }
+            else if(error == "logined") {
+                window.location.replace("home")
+            }
+        });
+    </script>
+
+</head>
+<body class=" d-flex flex-column min-vh-100">
+<!-- header -->
+<header th:replace="~{/layout/header::header}"></header>
+<!-- header END -->
+
+<main class="container mt-5 flex-grow-1 ">
+    <div class="login-page">
+        <h2 class="text-center mb-4">로그인</h2>
+        <form method="post">
+            <input type="hidden" th:value="${error}" id="error">
+            <div class="mb-3">
+                <label for="user-id" class="form-label">ID</label>
+                <input type="text" class="form-control" id="user-id" name="userId" placeholder="ID 입력하세요" th:value="${userId}" th:required="true">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="userPw" placeholder="비밀번호를 입력하세요">
+            </div>
+            <div class="mb-1 form-check">
+                <span style="font-size: 15px;" class="text-secondary">
+                    <label for="remember-id" class="form-check-label">ID 저장</label>
+                    <input type="checkbox" class="form-check-input" id="remember-id" name="rememberId" value="Y" th:checked="${cookieCheck}" th:required="true">
+                </span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">로그인</button>
+            <div class="text-center mt-3">
+                <span style="font-size: 15px;">
+                    <a href="/signIn" class="text-decoration-none text-secondary">회원가입</a>
+                </span>
+            </div>
+            <div class="text-center mt-3">
+                <span style="font-size: 15px;">
+                    <a href="/findId" class="text-decoration-none text-secondary" >ID</a> / <a href="/findPassword" class="text-decoration-none text-secondary">비밀번호</a> 를 잊으셨나요?
+                </span>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{/layout/footer::footer}"></footer>
+</body>
+</html>

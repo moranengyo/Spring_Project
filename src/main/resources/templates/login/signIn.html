@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사용하기</title>
+    <script src="/js/jquery-3.7.1.js"></script>
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <script src="/js/bootstrap.bundle.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+        body {
+            font-family: "Noto Sans KR", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 500;
+            font-style: normal;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto; /* Center align the form container */
+        }
+        .card-body {
+            padding: 2rem; /* Add padding inside the card */
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            const error = $("#error").val();
+            if (error == "existEmail") {
+                alert("이미 존재 혹은 탈퇴한 회원의 Email 입니다.");
+                window.location.replace("signIn");
+            }
+            else if(error == "existId") {
+                alert("이미 존재 혹은 탈퇴한 회원의 ID 입니다.");
+                window.location.replace("signIn");
+            }
+            else if(error == "pwChk") {
+                alert("패스워드를 체크해 주세요.");
+                window.location.replace("signIn")
+            }
+        });
+    </script>
+</head>
+<body>
+<!-- header -->
+<header th:replace="~{/layout/header::header}"></header>
+<!-- header END -->
+<!-- Main Content -->
+<main>
+    <input type="hidden" th:value="${error}" id="error">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card form-container">
+                <div class="card-body">
+                    <h4 class="mb-3">회원가입</h4>
+                    <form action="signIn" class="needs-validation" method="post">
+                        <!-- Email Input -->
+                        <div class="mb-3">
+                            <label for="Email1" class="form-label">Email <span class="text-body-secondary">(필수사항)</span></label>
+                            <input type="email" class="form-control" id="Email1" name="email" placeholder="Enter email" th:required="true">
+<!--                            <div class="invalid-feedback">이메일 주소를 입력하세요.</div>-->
+                        </div>
+
+                        <!-- User ID Input -->
+                        <div class="mb-3">
+                            <label for="user-id" class="form-label">ID<span class="text-body-secondary">(필수사항)</span></label>
+                            <input type="text" class="form-control" id="user-id" name="userId" placeholder="ID" th:required="true">
+                            <div class="invalid-feedback">ID를 입력해 주세요.</div>
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="mb-3">
+                            <label for="user-pw" class="form-label">Password<span class="text-body-secondary">(필수사항)</span></label>
+                            <input type="password" class="form-control" id="user-pw" name="userPw" placeholder="비밀번호" th:required="true">
+                            <div class="invalid-feedback">비밀번호를 입력해 주세요.</div>
+                        </div>
+
+                        <!-- Confirm Password Input -->
+                        <div class="mb-3">
+                            <label for="userpw-confirm" class="form-label">Password 확인</label>
+                            <input type="password" class="form-control" id="userpw-confirm" name="userPwChk" placeholder="Password 확인" th:required="true">
+                            <div class="invalid-feedback">비밀번호를 입력해 주세요.</div>
+                        </div>
+
+                        <!-- Preferred Movies Input -->
+                        <div class="mb-3">
+                            <label for="inputDefault" class="form-label">선호 영화 및 장르<span class="text-body-secondary">(선택사항)</span></label>
+                            <input type="text" class="form-control" placeholder="영화 및 장르" name="movieCate" id="inputDefault" th:required="true">
+                        </div>
+
+                        <!-- Gender Selection -->
+                        <div class="mb-3">
+                            <h6>성별<span class="text-body-secondary">(필수사항)</span></h6>
+                            <!-- Male Radio Button -->
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="radio1" name="gender" value="M" checked>
+                                <label class="form-check-label" for="radio1" >남자</label>
+                            </div>
+                            <!-- Female Radio Button -->
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="radio2" name="gender" value="W">
+                                <label class="form-check-label" for="radio2">여자</label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button class="w-100 btn btn-primary btn-lg" type="submit">가입하기</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+<!-- Main Content END -->
+<!-- Footer -->
+<footer th:replace="~{/layout/footer::footer}"></footer>
+</body>
+</html>

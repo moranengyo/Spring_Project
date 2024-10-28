@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="/css/bootstrap.css">
+
+    <script src="/js/jquery-3.7.1.js"></script>
+    <script src="/js/bootstrap.bundle.js"></script>
+
+
+</head>
+<body>
+
+<!-- header -->
+<header th:replace="~{/layout/header::header}"></header>
+<!-- header END -->
+
+<main class="container mt-5">
+    <section>
+        <div class="row">
+            <div class="col-sm mx-auto">
+                <form id="frm" action="/board/write" method="post">
+                    <!-- 제목 -->
+                    <div class="mb-3">
+                        <label for="wr_subject" class="form-label">제목 <strong>필수</strong></label>
+                        <input type="text" name="title" id="wr_subject" required class="form-control" maxlength="255" placeholder="제목">
+                    </div>
+
+                    <!-- 분류 -->
+                    <div class="mb-3" id="category-group">
+                        <label for="ca_name" class="form-label">분류 <strong>필수</strong></label>
+                        <select class="form-select" name="category" id="ca_name" required>
+                            <option value="">분류를 선택하세요</option>
+                            <option value="category1" th:if="">Category 1</option>
+                            <option value="category2">Category 2</option>
+                        </select>
+                    </div>
+
+                    <!-- 옵션 -->
+                    <div class="mb-3" id="option-group">
+                        <label class="form-label">옵션</label>
+                        <div id="options">
+                            <div class="form-check form-check-inline">
+                                <input type="checkbox" class="form-check-input" id="notice" name="warning" value="1">
+                                <label for="notice" class="form-check-label">공지</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input type="checkbox" class="form-check-input" id="notice2" name="warning" value="2">
+                                <label for="notice2" class="form-check-label">스포일러</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input type="checkbox" class="form-check-input" id="notice3" name="warning" value="3">
+                                <label for="notice3" class="form-check-label">성인</label>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+                    <!-- 내용 -->
+                    <div class="mb-3">
+                        <label for="wr_content" class="form-label">내용 <strong>필수</strong></label>
+                        <textarea name="content" id="wr_content" required class="form-control" rows="10"></textarea>
+                    </div>
+
+
+                    <!-- 버튼 -->
+                    <div class="mb-3 text-center">
+                        <button type="submit" id="btn_submit" class="btn btn-primary">작성완료</button>
+                        <button type="button" class="btn btn-secondary" onclick="history.back();">취소</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{/layout/footer::footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset=" UTF-8">
+    <meta name="viewport" content="Width=device-Width,initial-scale=1.0">
+    <title>사용하기</title>
+    <script src="/js/jquery-3.7.1.js"></script>
+
+    <link href="/css/bootstrap.css" rel="stylesheet">
+
+    <script src="/js/bootstrap.bundle.js"></script>
+</head>
+<body>
+<header th:fragment="header" class="p-3 bg-dark text-white">
+    <div class="container d-flex align-items-center justify-content-between">
+
+        <!-- Left Side: Logo and Navigation Links -->
+        <div class="d-flex align-items-center">
+            <!-- Logo -->
+            <a href="/static" class="d-flex align-items-center text-white text-decoration-none me-3">
+                <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
+                    <use xlink:href="#bootstrap"></use>
+                </svg>
+            </a>
+
+            <!-- Navigation Links -->
+            <ul class="nav d-flex align-items-center mb-2 mb-lg-0">
+                <li><a href="/home" class="nav-link px-2 text-secondary">Home</a></li>
+                <li><a href="/movie/" class="nav-link px-2 text-white">영화정보</a></li>
+                <li><a href="/board/" class="nav-link px-2 text-white">자유게시판</a></li>
+                <li><a href="#" class="nav-link px-2 text-white">자주하는질문</a></li>
+                <li><a href="#" class="nav-link px-2 text-white">About</a></li>
+            </ul>
+        </div>
+
+        <!-- Centered Content (Empty) -->
+        <div class="flex-grow-1"></div>
+
+
+        <!-- Right Side: Form and Buttons -->
+        <div class="d-flex align-items-center">
+            <form class="d-flex me-3">
+                <input type="search" class="form-control form-control-dark" placeholder="검색..." aria-label="Search">
+            </form>
+            <a href="/login" class="btn btn-outline-light btn-sm me-3" th:if="${session.userId} == null">로그인</a>
+            <a href="/signIn" class="btn btn-warning btn-sm me-3" th:if="${session.userId} == null">회원가입</a>
+            <a href="/logout" class="btn btn-danger btn-sm me-3" th:unless="${session.userId} == null">로그아웃</a>
+        </div>
+        <!-- Offcanvas Sidebar -->
+
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasExampleLabel">마이 페이지</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="mt-3">
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="#" class="text-decoration-none">게시판 목록 가기</a></li>
+                        <li class="list-group-item"><a href="#" class="text-decoration-none">프로필</a></li>
+                        <li class="list-group-item"><a href="#" class="text-decoration-none">설정</a></li>
+                        <li class="list-group-item"><a href="#" class="text-decoration-none">로그아웃</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Toggle Button (Ensure this button or link is placed where it will open the offcanvas) -->
+        <a href="#" class="btn btn-outline-light" type="button" th:href="@{|/profile/${session.userId}|}" th:unless="${session.userId} == null">
+            마이페이지
+        </a>
+    </div>
+</header>
+
+</body>
