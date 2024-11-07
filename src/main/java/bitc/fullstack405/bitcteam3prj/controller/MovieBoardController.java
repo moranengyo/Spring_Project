@@ -67,6 +67,7 @@ public class MovieBoardController {
         }
 
 
+        mv.addObject("searchTitle", searchTitle);
         mv.addObject("movieCate", MovieCategory.values());
         mv.addObject("movieBoardList", movieBoardList);
         mv.addObject(

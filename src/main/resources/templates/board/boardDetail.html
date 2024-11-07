@@ -36,6 +36,12 @@
             $("#btn-update").on("click", function () {
                 $("#method").val("PUT");
 
+                const title = $("#board-title").text();
+                const content = $("#board-content").text();
+
+                $("#edit-title").val(title);
+                $("#edit-content").val(content);
+
                 const frm = $("#frm")[0];
                 frm.action = "/board/" + $("#board-id").val();
                 frm.submit();
@@ -87,7 +93,7 @@
 
                 <!-- 게시물 내용 -->
                 <div class="mb-4" style="min-height: 250px;">
-                    <p th:text="${board.content}">게시물 내용이 여기에 들어갑니다. 게시물 내용이 여기에 들어갑니다. 게시물 내용이 여기에 들어갑니다. 게시물 내용이 여기에 들어갑니다.</p>
+                    <p th:utext="${board.content}" style="white-space: pre-wrap">게시물 내용이 여기에 들어갑니다. 게시물 내용이 여기에 들어갑니다. 게시물 내용이 여기에 들어갑니다. 게시물 내용이 여기에 들어갑니다.</p>
                 </div>
 
                 <!--------좋아요 하트 토글 버튼----->
@@ -176,11 +182,11 @@
                     <input type="hidden" name="boardId" th:value="${board.id}">
                     <div class="mb-3">
                         <label for="edit-title" class="form-label">제목</label>
-                        <input type="text" class="form-control" name="title" id="edit-title" value="게시물 제목" required>
+                        <input type="text" class="form-control" name="title" id="edit-title" th:value="${board.title}" required>
                     </div>
                     <div class="mb-3">
                         <label for="edit-content" class="form-label">내용</label>
-                        <textarea class="form-control" name="content" id="edit-content" rows="10" required>게시물 내용이 여기에 들어갑니다.</textarea>
+                        <textarea class="form-control" name="content" id="edit-content" rows="10" required th:text="${board.content}">게시물 내용이 여기에 들어갑니다.</textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">저장</button>
                 </form>
