@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사용하기</title>
+    <title>movcom</title>
     <link href="/css/bootstrap.css" rel="stylesheet">
     <script src="/js/jquery-3.7.1.js"></script>
     <script src="/js/bootstrap.bundle.js"></script>
@@ -18,7 +18,13 @@
         }
 
         .carousel-item img {
-            height: 400px;
+            height: 450px;
+            object-fit: cover;
+            margin: 15px 0;
+        }
+
+        .card-img-top {
+            height: 350px;
             object-fit: cover;
         }
 
@@ -52,6 +58,7 @@
 
         .multi-carousel-inner{
             float:left;
+            display: flex;
             transition: 1s ease all;
         }
 
@@ -75,6 +82,10 @@
             pointer-events: none;
 
             opacity: 0%; }
+
+        .col-md, .col-lg-4 {
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 
@@ -86,7 +97,7 @@
         <div class="multi-carousel" data-items="2, 3, 4, 5" data-slide="1" style="height: 450px;">
             <div class="multi-carousel-inner">
                 <div th:each="showing : ${showingMovieList}" class="item" style="height: 450px;">
-                    <div style="height: 550px;">
+                    <div style="height: 450px;">
                         <a th:href="@{|/movie/movieinfo/${showing.id}|}">
                             <img th:src="${!#strings.isEmpty(showing.posterImageName)}
                             ? @{|/image/${showing.posterImageName}.jpg|}
@@ -233,7 +244,7 @@
         <div class="col-sm mb-4">
             <div class="card">
                 <div class="card-header d-flex align-items-center justify-content-between">
-                    <h2 class="h3 mb-0">영화 OO 게시판</h2>
+                    <h2 class="h3 mb-0">영화 게시판</h2>
                     <a href="/movie" class="btn btn-secondary">게시판 이동</a>
                 </div>
                 <div class="card-body">

@@ -25,6 +25,7 @@
       .btn-trans { background: transparent; border: none; }
       .btn-round { border-radius: 50%; }
       .panel-body { margin: 20px 0; }
+      .movie-info-container img { margin-bottom: 10px;}
 
 
   </style>
@@ -95,19 +96,21 @@
   <div class="row">
     <div class="col-md-12">
       <section class="panel">
-        <div class="panel-body">
+        <div class="panel-body movie-info-container">
           <div class="row">
-            <div class="col-md-6 mx-auto">
+            <div class="col-md-6 mx-auto align-content-center">
               <img
                    th:src="${#strings.isEmpty(movie.movie.posterImageName)} ?
                    'https://www.bootdey.com/image/550x380/FFB6C1/000000' :
                     @{|/image/${movie.movie.posterImageName}.jpg|}"
                    alt="Product image"
-                   class="img-fluid">
+                   class="img-fluid"
+                   style="margin-left: 150px;"
+              >
             </div>
             <div class="col-md-6">
               <h4 class="pro-d-title">
-                <a href="#">영화제목</a>
+                영화제목
               </h4>
               <p th:text="${movie.movie.movieName}">장화 홍련</p>
 

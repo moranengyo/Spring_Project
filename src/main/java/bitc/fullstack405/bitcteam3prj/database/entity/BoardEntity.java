@@ -26,7 +26,7 @@ public class BoardEntity extends BaseEntity{
     @Column(nullable = false)
     private String title; // 제목
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String content; // 본문
 
     @Column(nullable = false)
